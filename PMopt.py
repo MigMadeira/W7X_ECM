@@ -155,6 +155,7 @@ print('GPMO took t = ', t2 - t1, ' s')
 # optionally save the whole solution history
 #np.savetxt(OUT_DIR + 'mhistory_K' + str(kwargs['K']) + '_nphi' + str(nphi) + '_ntheta' + str(ntheta) + '.txt', m_history.reshape(pm_opt.ndipoles * 3, kwargs['nhistory'] + 1))
 np.savetxt(OUT_DIR + 'R2history_K' + str(kwargs['K']) + '_nphi' + str(nphi) + '_ntheta' + str(ntheta) + '.txt', R2_history)
+np.savetxt(OUT_DIR + 'Bnhistory_K' + str(kwargs['K']) + '_nphi' + str(nphi) + '_ntheta' + str(ntheta) + '.txt', Bn_history)
 
 # Note backtracking uses num_nonzeros since many magnets get removed 
 plt.figure()
