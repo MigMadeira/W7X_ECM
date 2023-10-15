@@ -33,7 +33,7 @@ t_start = time.time()
 comm = None
 nphi = 64 # need to set this to 64 for a real run
 ntheta = 64 # same as above
-dr = 0.11
+dr = 0.055
 surface_flag = 'wout'
 input_name = 'wout_W7-X_standard_configuration.nc'
 coordinate_flag = 'toroidal'
@@ -54,7 +54,7 @@ s_plot = SurfaceRZFourier.from_wout(
 )
 
 # Make the output directory
-OUT_DIR = 'W7X_PMopt_2_20/'
+OUT_DIR = 'W7X_PMopt_2_20_dr=0.055/'
 os.makedirs(OUT_DIR, exist_ok=True)
 
 #Loading the coils
@@ -133,17 +133,17 @@ print('Number of available dipoles = ', pm_opt.ndipoles)
 algorithm = 'baseline'
 kwargs = initialize_default_kwargs('GPMO')
 if ncoils == 40:
-    kwargs['K'] = 7200
-    kwargs['nhistory'] = 600
-    dividor = 60
+    kwargs['K'] = 32160 #7200
+    kwargs['nhistory'] = 480 #600
+    divisor = 48 #60
 elif ncoils == 30:
-    kwargs['K'] = 11600
-    kwargs['nhistory'] = 580
-    divisor = 58
+    kwargs['K'] = 49700 #11600
+    kwargs['nhistory'] = 700 #580
+    divisor = 70 #58
 else:
-    kwargs['K'] = 12300
-    kwargs['nhistory'] = 410
-    divisor = 41
+    kwargs['K'] = 52800 #12300
+    kwargs['nhistory'] = 480 #410
+    divisor = 48 #41
 
 # Optimize the permanent magnets greedily
 t1 = time.time()
@@ -190,6 +190,8 @@ b_dipole = DipoleField(pm_opt)
 b_dipole.set_points(s_plot.gamma().reshape((-1, 3)))
 b_dipole._toVTK(OUT_DIR + "Dipole_Fields_K" + str(int(kwargs['K'] / (kwargs['nhistory']) * min_ind)))
 Bnormal_dipoles = np.sum(b_dipole.B().reshape((qphi, ntheta, 3)) * s_plot.unitnormal(), axis=-1)
+bs.set_points(s_plot.gamma().reshape((-1, 3)))
+Bnormal = np.sum(bs.B().reshape((qphi, ntheta, 3)) * s_plot.unitnormal(), axis=2)
 Bnormal_total = Bnormal + Bnormal_dipoles
 # For plotting Bn on the full torus surface at the end with just the dipole fields
 make_Bnormal_plots(b_dipole, s_plot, OUT_DIR, "only_m_optimized_K" + str(int(kwargs['K'] / (kwargs['nhistory']) * min_ind)))
@@ -207,7 +209,7 @@ bs.set_points(s_plot.gamma().reshape((-1, 3)))
 Bnormal = np.sum(bs.B().reshape((qphi, ntheta, 3)) * s_plot.unitnormal(), axis=2)
 make_Bnormal_plots(bs, s_plot, OUT_DIR, "biot_savart_optimized")
 
-for k in range(0, kwargs["nhistory"] + 1, dividor):
+for k in range(0, kwargs["nhistory"] + 1, divisor):
     pm_opt.m = m_history[:, :, k].reshape(pm_opt.ndipoles * 3)
     np.savetxt(OUT_DIR + 'm' + str(int(kwargs['K'] / (kwargs['nhistory']) * k)) + '.txt', m_history[:, :, k].reshape(pm_opt.ndipoles * 3))
     b_dipole = DipoleField(pm_opt)
