@@ -27,8 +27,8 @@ from simsopt.util.permanent_magnet_helper_functions import *
 from simsopt.mhd.vmec import Vmec
 from simsopt import load
 
-def write_float_line(file, float1, float2, float3):
-    line = "{:.{}f} {:.{}f} {:.{}f}\n".format(float1, sys.float_info.dig, float2, sys.float_info.dig, float3, sys.float_info.dig)
+def write_float_line(file, float1, float2, float3, float4):
+    line = "{:.{}f} {:.{}f} {:.{}f} {:.{}f}\n".format(float1, sys.float_info.dig, float2, sys.float_info.dig, float3, sys.float_info.dig, float4, sys.float_info.dig)
     file.write(line)
 
 # Set some parameters
@@ -56,7 +56,7 @@ s_plot = SurfaceRZFourier.from_wout(
 )
 
 # Make the output directory
-OUT_DIR = './W7X_PMopt_2_20_dr=0.055/'
+OUT_DIR = './current_study/N=2/'
 os.makedirs(OUT_DIR, exist_ok=True)
 
 #Loading the coils
@@ -74,7 +74,7 @@ else:
 for x in scaling: 
     OUT_DIR2 = OUT_DIR + f'scaling={x}/'
     os.makedirs(OUT_DIR2, exist_ok=True)
-       
+
     #fix the current
     coils = bs_wrong_currents.coils
     base_curves = [coils[i].curve for i in range(ncoils)]
@@ -224,4 +224,4 @@ for x in scaling:
     write_pm_optimizer_to_famus(OUT_DIR2, pm_opt)
     
     with open('current_study.txt', 'a') as f:
-        write_float_line(f, scaling, B0avg, R2_history[min_ind])
+        write_float_line(f, scaling, B0avg, R2_history[min_ind], Bn_history[min_ind])
